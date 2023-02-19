@@ -1,6 +1,5 @@
 import React from "react";
 import Drawer from "@material-ui/core/Drawer";
-import Button from "@material-ui/core/Button";
 import styles from "./FormDrawer.module.css";
 import BusBookingForm from "../../Bus Booking Form/BusBookingForm";
 
@@ -31,7 +30,7 @@ export function FormDrawer() {
         open={formDrawerState}
         onClose={toggleDrawer(false)}
       >
-        <div style={{ width: "570px" }}>
+        <div style={{ width: "600px" }}>
           <BusBookingForm />
         </div>
       </Drawer>

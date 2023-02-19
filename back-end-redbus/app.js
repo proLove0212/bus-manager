@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const { v4: uuidv4 } = require("uuid");
 const stripe = require("stripe")(
-  "sk_test_51D9ybxG1hGhZmBxsLWTFdI3TnMsj8W63ZolWzACySfUDLTdkCQXkOFpcJiBi0wKo3QDcUGXS5NJ5QGGf3K3z1QVp006yCc7aim"
+  "sk_test_51D9ybxG1hGhZmBxsXKTXZ2VMP721dPDl4O1rd3FDyj7X0A9Ffhc3NFt4MhRob20DahnErmtteUwrvY4x9QnSNVx100IXgNpFlI"
 ); // add a stripe key, (this test key will expire on 18th march 2021)
 
 mongoose.pluralize(null);
@@ -15,11 +15,10 @@ const bookingRoutes = require("./routes/booking");
 const customerRoutes = require("./routes/customer");
 const routeRoutes = require("./routes/route");
 
-app.post("/v1/api/stripe-payments", (req, res) => {
+app.post("/v1/api/stripe-payments", async (req, res) => {
   const { product, token } = req.body;
   console.log("PRODUCT", product);
-  console.log("PRICE", product.poice);
-
+  console.log("PRICE", product.price);
   const idempontencyKey = uuidv4();
   return stripe.customers
     .create({
@@ -46,7 +45,11 @@ app.use(busRoutes);
 app.use(bookingRoutes);
 app.use(customerRoutes);
 app.use(routeRoutes);
+const bookingHireRoutes = require("./routes/bookinghire");
+app.use(bookingHireRoutes);
+
 const busServiceRoutes = require("./routes/busservice");
+app.use(busServiceRoutes);
 
 const connect = () => {
   return mongoose.connect(
@@ -60,8 +63,10 @@ const connect = () => {
   );
 };
 
+const port = process.env.PORT || 3020;
+let host = process.env.HOST;
 const start = async () => {
   await connect();
-  app.listen(8000, () => console.log("Listening at Port 8000"));
+  app.listen(port, host);
 };
 start();

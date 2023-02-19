@@ -1,29 +1,36 @@
 import React from "react";
-import axios from "axios";
 import design from "./BusServiceCard.module.css";
-import { Link, useHistory } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Button from "@material-ui/core/Button";
 import { useSelector, useDispatch } from "react-redux";
-import { getBusData } from "../../../Redux/busService/action";
+import { getBusData2 } from "../../../Redux/busService/action";
+import { useLocation } from "react-router-dom";
 
 const BusServiceCardPage = () => {
   const busList = useSelector((state) => state.busServiceReducer.busList);
   console.log(busList);
   const dispatch = useDispatch();
 
-  const history = useHistory();
-  const handleClick = (id) => {
-    history.push(`/busPage/${id}`);
-  };
+  //const history = useHistory();
+  // const handleClick = (id) => {
+  //   history.push(`/busPage/${id}`);
+  // };
+  let { search } = useLocation();
+  const query = new URLSearchParams(search);
+  const pickUp = query.get("pickUp");
+  const drop = query.get("drop");
+  const pickUpDate = query.get("pickUpDate");
+  const dropDate = query.get("dropDate");
+  const totalPassengers = query.get("totalPassengers");
 
   React.useEffect(() => {
-    dispatch(getBusData());
-  }, []);
+    dispatch(getBusData2());
+  }, [dispatch]);
   return (
     <div className={design.mainContainer}>
       <div className={design.leftContainer}>
-        <h1 style={{ textTransform: "none" }}>
-          We have {busList.length !== 0 ? busList.length : 0} quotation
+        <h1 style={{ textTransform: "none", marginTop : "30px" , marginBottom : "20px"}}>
+          We have {busList.length !== 0 ? busList.length : 0} quotations for you
         </h1>
         <div className={design.cardContainer}>
           {busList?.map((item) => {
@@ -41,18 +48,24 @@ const BusServiceCardPage = () => {
                       margin: "20px 8px 20px 0px",
                       color: "#d84f57",
                       textTransform: "none",
+                      lineHeight: "15px"
                     }}
                   >
-                    <span style={{ fontSize: "16px", color: "grey" }}>
-                      Staring Cost
+                    <span style={{ fontSize: "14px", color: "grey" }}>
+                      Starting Cost
                     </span>{" "}
-                    <br /> Rs.{item.total}
+                    <br />
+                    <span style={{ fontSize: "16px", color: "#d84e55", fontWeight: "700" }}>Rs.{item.total}</span>
                   </h1>
                 </div>
                 <div className={design.footerCard}>
                   {/* <Link to={`/busdetails/:${item._id}`}>view details</Link> */}
-                  <Button onClick={() => handleClick(item._id)} color="primary">
-                    view details
+                  <Button color="primary">
+                    <Link style={{ textDecoration: "none", fontWeight: "700", color: "#1034d9" }}
+                      to={`/bus-hire-details/${item._id}?pickUp=${pickUp}&drop=${drop}&pickUpDate=${pickUpDate}&dropDate=${dropDate}&totalPassengers=${totalPassengers}`}
+                    >
+                      View Details
+                    </Link>
                   </Button>
                 </div>
               </div>
@@ -61,7 +74,7 @@ const BusServiceCardPage = () => {
         </div>
       </div>
       <div className={design.rightContainer}>
-        <div className={design.blueContainer}>
+        {/* <div className={design.blueContainer}>
           <img
             style={{ display: "inline-block", marginRight: "16px" }}
             src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fcdn3.iconfinder.com%2Fdata%2Ficons%2Fmoney-icons%2F100%2F1-512.png&f=1&nofb=1"
@@ -71,8 +84,8 @@ const BusServiceCardPage = () => {
           <p style={{ display: "inline-block" }}>
             Pay just 25% as advance to book
           </p>
-        </div>
-        <div className={design.blueContainer}>
+        </div> */}
+        {/* <div className={design.blueContainer}>
           <img
             style={{ display: "inline-block", marginRight: "16px" }}
             src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse3.mm.bing.net%2Fth%3Fid%3DOIP.4QKxNTpVlc7F3vqAPsb_NgHaHa%26pid%3DApi&f=1"
@@ -82,7 +95,7 @@ const BusServiceCardPage = () => {
           <p style={{ display: "inline-block" }}>
             Free Cancellation till 20 Mar 2021, 04:15 PM
           </p>
-        </div>
+        </div> */}
         <div className={design.safetyContainer}>
           <div className={design.BusimgBox}>
             <img
@@ -112,9 +125,7 @@ const BusServiceCardPage = () => {
           <h3>Covid 19 travel guidelines</h3>
           <p>Check latest travel guidelines issued by State Governments</p>
           <hr />
-          <p style={{ color: "blue", textAlign: "right", padding: "6px" }}>
-            Read Guidelines
-          </p>
+
         </div>
       </div>
     </div>

@@ -25,9 +25,10 @@ const addCustomerMongoRequest = () => {
     type: actionTypes.ADD_CUSTOMER_MONGO_REQUEST,
   };
 };
-const addCustomerMongoSuccess = () => {
+const addCustomerMongoSuccess = (id) => {
   return {
     type: actionTypes.ADD_CUSTOMER_MONGO_SUCCESS,
+    payload: id,
   };
 };
 const addCustomerMongoFailure = () => {
@@ -47,11 +48,11 @@ const addCustomerMongo = (profileObj) => {
         profilePicture: profileObj.imageUrl,
       };
       const res = await axios.post(
-        "http://localhost:8000/v1/api/customers",
+        `${process.env.REACT_APP_BACKEND_URL}/v1/api/customers`,
         customer
       );
       console.log("response from db: ", res);
-      dispatch(addCustomerMongoSuccess(res));
+      dispatch(addCustomerMongoSuccess(res.data._id.toString()));
     } catch (err) {
       console.log("error", err);
       dispatch(addCustomerMongoFailure());

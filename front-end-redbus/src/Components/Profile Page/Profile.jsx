@@ -5,14 +5,17 @@ import { FaWallet } from "react-icons/fa";
 import { AiOutlineSetting } from "react-icons/ai";
 import { BiPin } from "react-icons/bi";
 import MyTrips from "./MyTrips";
-import { useSelelector } from "react-router-dom";
+import HiredBuses from "./HiredBuses";
+import { useSelector } from "react-redux";
 const Profile = () => {
   const [selectedItem, setSelectedItem] = React.useState("trips");
   const handleListItemClick = (selected) => {
     console.log("Selected: ", selected);
     setSelectedItem(selected);
   };
-
+  const currentCustomer = useSelector(
+    (state) => state.authReducer.currentCustomer
+  );
   return (
     <div className={Styles.ProfilePannel}>
       <div className={Styles.leftPart}>
@@ -28,7 +31,9 @@ const Profile = () => {
                 justifyContent: "space-evenly",
               }}
             >
-              <div className={Styles.profileName}>Archana singh</div>
+              <div className={Styles.profileName}>
+                {currentCustomer ? currentCustomer.name : "Dashboard"}
+              </div>
               <div className={Styles.walletVerified}>Wallet Verified</div>
             </div>
           </li>
@@ -39,6 +44,14 @@ const Profile = () => {
           >
             <BiPin style={{ color: "grey", fontSize: "30px" }} />
             <div className={Styles.leftPannel_eachListItem_text}>My Trips</div>
+          </li>
+          <div className={Styles.line}></div>
+          <li
+            className={Styles.leftPannel_eachListOption}
+            onClick={() => handleListItemClick("hiredBuses")}
+          >
+            <BiPin style={{ color: "grey", fontSize: "30px" }} />
+            <div className={Styles.leftPannel_eachListItem_text}>Hired Bus</div>
           </li>
           {/* <div className={Styles.line}></div>
           <li className={Styles.leftPannel_eachListOption}>
@@ -69,9 +82,10 @@ const Profile = () => {
         </ul>
       </div>
       <div className={Styles.seprator}></div>
-      {selectedItem == "trips" ? <MyTrips /> : null}
-      {selectedItem == "wallet" ? "Wallet feature coming soon..." : null}
-      {selectedItem == "profile" ? (
+      {selectedItem === "hiredBuses" ? <HiredBuses /> : null}
+      {selectedItem === "trips" ? <MyTrips /> : null}
+      {selectedItem === "wallet" ? "Wallet feature coming soon..." : null}
+      {selectedItem === "profile" ? (
         <div className={Styles.rightPannel}>
           <span className={Styles.profileHeading}> My Profile</span>
           <div className={Styles.profilebox}>
@@ -86,7 +100,9 @@ const Profile = () => {
                 }}
               >
                 <div className={Styles.userDetailHeading}>Your name</div>
-                <div className={Styles.userDetailInfo}>Archana singh</div>
+                <div className={Styles.userDetailInfo}>
+                  {currentCustomer ? currentCustomer.name : "User"}
+                </div>
               </div>
               <div
                 style={{
@@ -98,7 +114,7 @@ const Profile = () => {
                 }}
               >
                 <div className={Styles.userDetailHeading}>Date of Birth</div>
-                <div className={Styles.userDetailInfo}>2017-04-04</div>
+                <div className={Styles.userDetailInfo}>1993-03-04</div>
               </div>
             </div>
             <div
@@ -118,7 +134,9 @@ const Profile = () => {
                 }}
               >
                 <div className={Styles.userDetailHeading}>Gender</div>
-                <div className={Styles.userDetailInfo}>Female</div>
+                <div className={Styles.userDetailInfo}>
+                  {currentCustomer ? currentCustomer.gender : "-"}
+                </div>
               </div>
             </div>
             <div
@@ -151,7 +169,9 @@ const Profile = () => {
                 }}
               >
                 <div className={Styles.userDetailHeading}>email</div>
-                <div className={Styles.userDetailInfo}>dummy email</div>
+                <div className={Styles.userDetailInfo}>
+                  {currentCustomer ? currentCustomer.email : "-"}
+                </div>
               </div>
               <div
                 style={{

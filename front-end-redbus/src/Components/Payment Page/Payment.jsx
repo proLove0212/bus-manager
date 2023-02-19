@@ -1,13 +1,12 @@
 import React from "react";
 import Styles from "./Payment.module.css";
-import { BsArrowRight } from "react-icons/bs";
-import { MdWatchLater } from "react-icons/md";
 import { MdAccountCircle } from "react-icons/md";
 import { MdDateRange } from "react-icons/md";
 import { VscLocation } from "react-icons/vsc";
-import StripeCheckout from "react-stripe-checkout";
+import { useSelector } from "react-redux";
+import axios from "axios";
 import { useHistory } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
+import StripeCheckout from "react-stripe-checkout";
 
 const Payment = () => {
   const passSeatsArray = useSelector((state) => state.busDetailsReducer.seats);
@@ -22,44 +21,103 @@ const Payment = () => {
   const currentCustomer = useSelector(
     (state) => state.authReducer.currentCustomer
   );
-
+  console.log("Current Customer is: ", currentCustomer);
   const operatorName = useSelector(
     (state) => state.busDetailsReducer.operatorName
   );
-
-  const [product, setProduct] = React.useState({
+  const passengerDetails = useSelector(
+    (state) => state.busDetailsReducer.passengerDetails
+  );
+  console.log("here passenger details:", passengerDetails);
+  const email = useSelector((state) => state.busDetailsReducer.email);
+  const fare = useSelector((state) => state.busDetailsReducer.fare);
+  const busId = useSelector((state) => state.busDetailsReducer.busId);
+  const phoneNumber = useSelector(
+    (state) => state.busDetailsReducer.phoneNumber
+  );
+  const departureDetails = useSelector(
+    (state) => state.busDetailsReducer.departureDetails
+  );
+  const arrivalDetails = useSelector(
+    (state) => state.busDetailsReducer.arrivalDetails
+  );
+  const duration = useSelector((state) => state.busDetailsReducer.duration);
+  const isBusinessTravel = useSelector(
+    (state) => state.busDetailsReducer.isBusinessTravel
+  );
+  const isInsurance = useSelector(
+    (state) => state.busDetailsReducer.isInsurance
+  );
+  const isCovidDonated = useSelector(
+    (state) => state.busDetailsReducer.isCovidDonated
+  );
+  const [product] = React.useState({
     name: "React from facebook",
     price: 10,
     productBy: "Facebook",
   });
   const history = useHistory();
-  const makePayment = (token) => {
-    const body = {
-      token,
-      product,
-    };
-    const headers = {
-      "Content-Type": "application/json",
-    };
-    //fire a request to backend
-    return fetch("http://localhost:8000/v1/api/stripe-payments", {
-      method: "POST",
-      headers,
-      body: JSON.stringify(body),
-    })
-      .then((res) => {
-        console.log("RESPONSE REACT", res);
-        const { status } = res;
-        console.log("STATUS REACT", status);
-        console.log("redirecting:");
-        history.push("/my-profile");
-      })
-      .catch((err) => {
-        console.log("Error while making payment", err);
-        alert(
-          "Something went wrong while making payment! Check Internet connection!"
-        );
-      });
+
+  const makePayment = async (token) => {
+    let myBooking = {};
+    // create booking object
+    myBooking.customerId = currentCustomer._id;
+    myBooking.passengerDetails = passengerDetails;
+    myBooking.email = email;
+    myBooking.phoneNumber = phoneNumber;
+    myBooking.fare = fare;
+    myBooking.status = "upcoming";
+    myBooking.busId = busId;
+    let date = new Date();
+    myBooking.bookingDate =
+      date.getFullYear() + "-" + date.getMonth() + "-" + date.getDate();
+    myBooking.seats = passSeatsArray;
+    myBooking.departureDetails = departureDetails;
+    myBooking.arrivalDetails = arrivalDetails;
+    myBooking.duration = duration;
+    myBooking.isBusinessTravel = isBusinessTravel;
+    myBooking.isInsurance = isInsurance;
+    myBooking.isCovidDonated = isCovidDonated;
+    console.log("My booking is:", myBooking);
+
+    try {
+      let res = await axios.post(
+        `${process.env.REACT_APP_BACKEND_URL}/v1/api/booking`,
+        myBooking
+      );
+      history.push("/my-profile");
+      console.log("Booking post response: ", res.data);
+    } catch (err) {
+      console.log("Error while adding booking to booking collection!", err);
+    }
+
+    // const body = {
+    //   token,
+    //   product,
+    // };
+    // const headers = {
+    //   "Content-Type": "application/json",
+    // };
+    // //fire a request to backend
+    // return fetch(`${process.env.REACT_APP_BACKEND_URL}/v1/api/stripe-payments`, {
+    //   method: "POST",
+    //   headers,
+    //   body: JSON.stringify(body),
+    // })
+    //   .then((res) => {
+    //     //console.log("RESPONSE REACT", res);
+    //     // const { status } = res;
+    //     //console.log("STATUS REACT", status);
+    //     //console.log("redirecting:");
+    //     // history.push("/my-profile");
+    //     console.log("hii udit", res);
+    //   })
+    //   .catch((err) => {
+    //     console.log("Error while making payment", err);
+    //     alert(
+    //       "Something went wrong while making payment! Check Internet connection!"
+    //     );
+    //   });
   };
 
   var date = new Date();
@@ -69,35 +127,6 @@ const Payment = () => {
 
   return (
     <div>
-      {/* <div className = {Styles.payment__main_header}>
-                <img src = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRLJvP7mBtUk_CR85hCOUXbwSgeCe7NL8u0tA&usqp=CAU" alt = "red bus logo" height = "100px"/>
-                <MdAccountCircle className = {Styles.icons}/>
-            </div> */}
-      {/* Header */}
-      <div className={Styles.payment__header}>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-evenly",
-            width: "150px",
-          }}
-        >
-          <div>Banglore</div>
-          <BsArrowRight />
-          <div>Mumbai</div>
-        </div>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-evenly",
-            width: "250px",
-          }}
-        >
-          <div>Please pay within :</div>
-          <MdWatchLater />
-          <div>7:43 minutes</div>
-        </div>
-      </div>
       {/* Full Container */}
       <div className={Styles.payment__fullContainer}>
         {/* left Container */}
@@ -148,9 +177,9 @@ const Payment = () => {
             {/************************ Stripe Payemnt Start ******************************************/}
             <div className={Styles.Payment__stripe}>
               <StripeCheckout
-                stripeKey="pk_test_51D9ybxG1hGhZmBxsALjqi8YDqgi6SMu4jOLB0BRli0zOXaSFMZhaJRhL8NIsVuLqjqWUWL7L3e6kcgeTFTufIX1M00k24eV7ps"
+                stripeKey="pk_test_51D9ybxG1hGhZmBxslwCy9OlHcJhpAqtbxdWrzyGfzTScoJ0RQEBJax7X2z8sE0MRAjl9KUn0R9Q0mz6x1ORmS2mg00IfXp80ED"
                 token={makePayment}
-                name="Buy React"
+                name="RedBus Booking"
               >
                 <button className={Styles.Payment__stripe__button}>
                   Pay With Stripe

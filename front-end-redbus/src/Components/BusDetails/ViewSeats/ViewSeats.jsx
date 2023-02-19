@@ -9,7 +9,7 @@ import Divider from "@material-ui/core/Divider";
 import { FormDrawer } from "./FormDrawer";
 import { SubRoutes } from "../SelectSubRoutes/SubRoutes";
 import { updateBookingDetails } from "../../../Redux/BookBus/action";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 
 const ViewSeats = ({
   filledSeats,
@@ -43,7 +43,7 @@ const ViewSeats = ({
 
     dispatch(updateBookingDetails(payload1));
     dispatch(updateBookingDetails(payload2));
-  }, [selectedSeats]);
+  }, [selectedSeats, seatPrice, dispatch]);
 
   React.useEffect(() => {
     let busIdPayload = {
@@ -51,7 +51,7 @@ const ViewSeats = ({
       value: busId.toString(),
     };
     dispatch(updateBookingDetails(busIdPayload));
-  }, []);
+  }, [busId, dispatch]);
 
   const handleSelectedSeats = (seatNo) => {
     if (selectedSeats.includes(seatNo)) {
@@ -187,7 +187,7 @@ const ViewSeats = ({
             <div
               style={{ fontSize: "16px", color: "#4a4a4a", fontWeight: "700" }}
             >
-              9:30
+              {busDepartureTime}:00
             </div>
           </div>
           <div className={styles.mainContainer33}>
@@ -207,7 +207,7 @@ const ViewSeats = ({
             <div
               style={{ fontSize: "16px", color: "#4a4a4a", fontWeight: "700" }}
             >
-              11:30
+              {busArrivalTime}:00
             </div>
           </div>
           <Divider />
