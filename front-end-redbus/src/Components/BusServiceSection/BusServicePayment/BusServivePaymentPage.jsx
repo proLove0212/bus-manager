@@ -1,72 +1,17 @@
 import React from "react";
-import Styles from "./Payment.module.css";
+import Styles from "./BusPayment.module.css";
 import { BsArrowRight } from "react-icons/bs";
 import { MdWatchLater } from "react-icons/md";
 import { MdAccountCircle } from "react-icons/md";
 import { MdDateRange } from "react-icons/md";
 import { VscLocation } from "react-icons/vsc";
-import StripeCheckout from "react-stripe-checkout";
-import { useHistory } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-
 const Payment = () => {
-  const passSeatsArray = useSelector((state) => state.busDetailsReducer.seats);
-  const passFare = useSelector((state) => state.busDetailsReducer.fare);
-  const passDepartDetails = useSelector(
-    (state) => state.busDetailsReducer.departureDetails
-  );
-  const passArrivalDetails = useSelector(
-    (state) => state.busDetailsReducer.arrivalDetails
-  );
-
   const currentCustomer = useSelector(
     (state) => state.authReducer.currentCustomer
   );
-
-  const operatorName = useSelector(
-    (state) => state.busDetailsReducer.operatorName
-  );
-
-  const [product, setProduct] = React.useState({
-    name: "React from facebook",
-    price: 10,
-    productBy: "Facebook",
-  });
-  const history = useHistory();
-  const makePayment = (token) => {
-    const body = {
-      token,
-      product,
-    };
-    const headers = {
-      "Content-Type": "application/json",
-    };
-    //fire a request to backend
-    return fetch("http://localhost:8000/v1/api/stripe-payments", {
-      method: "POST",
-      headers,
-      body: JSON.stringify(body),
-    })
-      .then((res) => {
-        console.log("RESPONSE REACT", res);
-        const { status } = res;
-        console.log("STATUS REACT", status);
-        console.log("redirecting:");
-        history.push("/my-profile");
-      })
-      .catch((err) => {
-        console.log("Error while making payment", err);
-        alert(
-          "Something went wrong while making payment! Check Internet connection!"
-        );
-      });
-  };
-
-  var date = new Date();
-  var day = date.getDate();
-  var month = date.getMonth() + 1;
-  var year = date.getFullYear();
-
+  console.log(currentCustomer);
+  const currentBus = useSelector((state) => state.busServiceReducer.currentBus);
   return (
     <div>
       {/* <div className = {Styles.payment__main_header}>
@@ -145,21 +90,8 @@ const Payment = () => {
               Styles.payment__fullContainer_leftContainer_paymentInstruments
             }
           >
-            {/************************ Stripe Payemnt Start ******************************************/}
-            <div className={Styles.Payment__stripe}>
-              <StripeCheckout
-                stripeKey="pk_test_51D9ybxG1hGhZmBxsALjqi8YDqgi6SMu4jOLB0BRli0zOXaSFMZhaJRhL8NIsVuLqjqWUWL7L3e6kcgeTFTufIX1M00k24eV7ps"
-                token={makePayment}
-                name="Buy React"
-              >
-                <button className={Styles.Payment__stripe__button}>
-                  Pay With Stripe
-                </button>
-              </StripeCheckout>
-            </div>
-            {/************************ Stripe Payemnt End ******************************************/}
             <div className={Styles.choose_payment_heading}>
-              Choose Other Payment Method
+              Choose Payment Method
             </div>
             <div
               className={
@@ -351,9 +283,9 @@ const Payment = () => {
             }
           >
             <div className={Styles.travel_operator_info}>
-              <div className={Styles.travel_title}>{operatorName}</div>
+              <div className={Styles.travel_title}>National Travels</div>
               <div className={Styles.travel_specification}>
-                Seater / A/C / Sleeper
+                Bharat Benz A/C Seeper
               </div>
             </div>
             <div className={Styles.line}></div>
@@ -368,11 +300,10 @@ const Payment = () => {
               >
                 <MdDateRange className={Styles.icons} />
                 <div style={{ display: "flex", flexDirection: "column" }}>
-                  <div className={Styles.travel_specification}>
-                    Booking Date
-                  </div>
+                  <div className={Styles.travel_specification}>Departure</div>
                   <div style={{ display: "flex", width: "150px" }}>
-                    <div>{year + "/" + month + "/" + day}</div>
+                    <div>12 Mar 2021</div>
+                    <div style={{ marginLeft: "10px" }}>5:30 pm</div>
                   </div>
                 </div>
               </div>
@@ -383,8 +314,8 @@ const Payment = () => {
                   marginRight: "10px",
                 }}
               >
-                <div>Seats Booked</div>
-                <div>{passSeatsArray.join(", ")}</div>
+                <div>Seat</div>
+                <div>L7</div>
               </div>
             </div>
             <div className={Styles.line}></div>
@@ -401,25 +332,21 @@ const Payment = () => {
                   <div className={Styles.travel_specification}>
                     Boarding Point
                   </div>
-                  <div>{passDepartDetails.city}</div>
-                  <div>{passDepartDetails.location}</div>
-                  <div>{passDepartDetails.date}</div>
-                  <div>{passDepartDetails.time}:00</div>
+                  <div>{currentBus.source}</div>
+                  <div>Anand Rao Circle</div>
                 </div>
               </div>
               <div style={{ display: "flex", flexDirection: "column" }}>
                 <div className={Styles.travel_specification}>
                   Dropping Point
                 </div>
-                <div>{passArrivalDetails.city}</div>
-                <div>{passArrivalDetails.location}</div>
-                <div>{passArrivalDetails.date}</div>
-                <div>{passArrivalDetails.time}:00</div>
+                <div>Mumbai</div>
+                <div>Karmot Signal</div>
               </div>
             </div>
             <div className={Styles.passangerInfo}>
               <MdAccountCircle className={Styles.icons} />
-              <div className={Styles.passangerName}>{currentCustomer.name}</div>
+              <div className={Styles.passangerName}>Nitansh Rastogi(21,M)</div>
             </div>
           </div>
           <div
@@ -442,7 +369,10 @@ const Payment = () => {
                 justifyContent: "space-between",
                 marginTop: "10px",
               }}
-            ></div>
+            >
+              <div className={Styles.travel_specification}>Onward fare</div>
+              <div className={Styles.travel_specification}>1330.35</div>
+            </div>
             <div
               style={{
                 display: "flex",
@@ -460,7 +390,7 @@ const Payment = () => {
                 className={Styles.travel_specification}
                 style={{ fontWeight: "bold" }}
               >
-                Rs. {passFare}
+                1330.35
               </div>
             </div>
           </div>

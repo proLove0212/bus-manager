@@ -9,6 +9,7 @@ import styles from "./LandingPage.module.css";
 import { useHistory } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getRoutes } from "../../Redux/routes/action";
+import Awards from "./Awards and Recognition/Awards";
 const LandingPage = () => {
   const history = useHistory();
   const [departure, setDeparture] = React.useState("");
@@ -156,8 +157,24 @@ const LandingPage = () => {
           <div className={styles.LandingPage__form__button}>
             <button
               onClick={() => {
+                let departureTemp = departure;
+                let arrivalTemp = arrival;
+
+                // Sublocation 1 (Lucknow)
+                if (departureTemp.includes("(")) {
+                  departureTemp = departureTemp.substring(
+                    departureTemp.indexOf("(") + 1,
+                    departureTemp.indexOf(")")
+                  );
+                }
+                if (arrivalTemp.includes("(")) {
+                  arrivalTemp = arrivalTemp.substring(
+                    arrivalTemp.indexOf("(") + 1,
+                    arrivalTemp.indexOf(")")
+                  );
+                }
                 history.push(
-                  `/select-bus?departure=${departure}&arrival=${arrival}&date=${date}`
+                  `/select-bus?departure=${departureTemp}&arrival=${arrivalTemp}&date=${date}`
                 );
               }}
             >
@@ -170,6 +187,7 @@ const LandingPage = () => {
       <Safety />
       <BusTracker />
       <Services />
+      <Awards/>
     </div>
   );
 };
